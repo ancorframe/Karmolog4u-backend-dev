@@ -4,32 +4,44 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { TokenService } from 'src/token/token.service';
-
+import { UserService } from 'src/user/user.service';
+import { ObjectId } from 'mongodb';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
+    private configService: ConfigService,
     private readonly tokenService: TokenService,
+    private readonly userService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    const secret = this.configService.get<string>('JWT_SECRET');
+
     if (!token) {
       throw new UnauthorizedException();
     }
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: 'secretcode',
+      await this.jwtService.verifyAsync(token, {
+        secret,
       });
-      await this.tokenService.findToken({ accessToken: token });
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload.user;
-      request['token'] = token;
+
+      const tokenDb = await this.tokenService.findToken({
+        accessToken: token,
+      });
+
+      const user = await this.userService.findUserById({
+        _id: new ObjectId(tokenDb.owner.toString()),
+      });
+
+      request['user'] = user;
+      request['accessToken'] = token;
     } catch {
       throw new UnauthorizedException();
     }

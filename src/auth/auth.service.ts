@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from 'src/user/user.service';
 import { UserEntity } from '../user/dto/user-entity.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
     @Inject(UserService) private userService: UserService,
     @Inject(TokenService) private tokenService: TokenService,
     @Inject(JwtService) private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async singUp(registerUserDto: RegisterUserDto): Promise<ResponseSuccessDto> {
@@ -63,11 +65,18 @@ export class AuthService {
     };
     const accessPayload = { sub: user._id, user: userData, deviceId };
     const refreshPayload = { sub: user._id, deviceId };
+
+    const accessToken_expired = this.configService.get<string>(
+      'ACCESS_TOKEN_EXPIRED',
+    );
+    const refreshToken_expired = this.configService.get<string>(
+      'REFRESH_TOKEN_EXPIRED',
+    );
     const accessToken = await this.jwtService.signAsync(accessPayload, {
-      expiresIn: '15m',
+      expiresIn: accessToken_expired,
     });
     const refreshToken = await this.jwtService.signAsync(refreshPayload, {
-      expiresIn: '30d',
+      expiresIn: refreshToken_expired,
     });
     const token = await this.tokenService.newToken({
       accessToken,
@@ -124,11 +133,19 @@ export class AuthService {
       sub: payload.sub,
       deviceId: tokenInstance.deviceId,
     };
+
+    const accessToken_expired = this.configService.get<string>(
+      'ACCESS_TOKEN_EXPIRED',
+    );
+    const refreshToken_expired = this.configService.get<string>(
+      'REFRESH_TOKEN_EXPIRED',
+    );
+
     const accessToken = await this.jwtService.signAsync(accessPayload, {
-      expiresIn: '15m',
+      expiresIn: accessToken_expired,
     });
     const refreshToken = await this.jwtService.signAsync(refreshPayload, {
-      expiresIn: '30d',
+      expiresIn: refreshToken_expired,
     });
 
     const newToken = await this.tokenService.updateToken({
