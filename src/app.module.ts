@@ -13,13 +13,14 @@ import { getEnvPath } from './common/helper/env.helper';
 import { RouterModule } from '@nestjs/core';
 import { validate } from './common/helper/env.validation';
 import { LoggerMiddleware } from './common/middleware/logger.middlvare';
+import { AdminProductModule } from './admin/product/admin-product.module';
 
 const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
 @Module({
   imports: [
-    ProductModule,
-    MaterialModule,
+    // ProductModule,
+    // MaterialModule,
     ConfigModule.forRoot({ validate, envFilePath, isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -31,25 +32,27 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
     TokenModule,
     UserModule,
     AuthModule,
-    AdminModule,
+    // AdminModule,
     AdminUserModule,
-    GroupModule,
-    RouterModule.register([
-      {
-        path: 'admin',
-        module: AdminModule,
-        children: [
-          {
-            path: '/',
-            module: AdminUserModule,
-          },
-          // {
-          //   path: 'metrics',
-          //   module: MetricsModule,
-          // },
-        ],
-      },
-    ]),
+    AdminProductModule,
+    ProductModule,
+    // GroupModule,
+    // RouterModule.register([
+    //   {
+    //     path: 'admin',
+    //     module: AdminModule,
+    //     children: [
+    //       {
+    //         path: '/',
+    //         module: AdminUserModule,
+    //       },
+    //       {
+    //         // path: '/',
+    //         // module: ,
+    //       },
+    //     ],
+    //   },
+    // ]),
   ],
 })
 export class AppModule implements NestModule {

@@ -1,9 +1,10 @@
 // import { ProductService } from './product.service';
 // import { ProductController } from './product.controller';
 import { Module } from '@nestjs/common';
+import { MeditationModule } from './meditation/meditation.module';
 
 @Module({
-  imports: [],
+  imports: [MeditationModule],
   controllers: [],
   providers: [],
 })
