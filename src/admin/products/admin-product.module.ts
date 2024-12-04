@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AdminMeditationModule } from './meditation/admin-meditation.module';
+import { AdminMeditationModule } from './meditations/admin-meditation.module';
 import { AdminProductController } from './admin-product.controller';
 
 @Module({

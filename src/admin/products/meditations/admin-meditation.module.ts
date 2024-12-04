@@ -7,7 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   Meditation,
   MeditationSchema,
-} from 'src/product/meditation/schemas/meditation.schema';
+} from 'src/products/meditations/schemas/meditation.schema';
 
 @Module({
   imports: [

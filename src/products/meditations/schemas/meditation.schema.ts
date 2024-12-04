@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import * as mongoose from 'mongoose';
 
 export type MeditationDocument = HydratedDocument<Meditation>;
 
@@ -10,11 +11,10 @@ export interface Name {
 
 export interface Description {
   ru: string;
-
   uk: string;
 }
 
-export enum STATUS {
+export enum Status {
   PUBLISHED = 'PUBLISHED',
   HIDDEN = 'HIDDEN',
   DRAFT = 'DRAFT',
@@ -28,12 +28,15 @@ export enum STATUS {
     transform: function (doc, ret) {
       // Remove the "_id" property when the object is serialized
       delete ret._id;
-      // delete ret.password;
     },
   },
 })
 export class Meditation {
-  @Prop({ type: String, required: [true, 'category is required'] })
+  @Prop({
+    type: String,
+    enum: ['OPEN', 'CLOSE', 'ARCANES'],
+    required: [true, 'category is required'],
+  })
   category: string;
 
   @Prop({ type: Object, default: { ru: '', uk: '' } })
@@ -50,6 +53,10 @@ export class Meditation {
 
   @Prop({ type: String, default: '' })
   price: string;
+
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Discount', default: '' })
+  // discount: Discount;
+
   @Prop({ type: Boolean, default: false })
   isWaiting: boolean;
 
@@ -61,7 +68,7 @@ export class Meditation {
     enum: ['PUBLISHED', 'HIDDEN', 'DRAFT'],
     default: 'DRAFT',
   })
-  status: STATUS;
+  status: Status;
 
   @Prop({ type: Date, default: null })
   expiredAt: Date;
