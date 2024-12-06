@@ -25,7 +25,7 @@ export class AdminProductController {
     try {
       const meditations = await this.meditationService.getMeditationCount();
 
-      return { meditations };
+      return { meditations, vebinars: 0, 'guides-and-books': 0, gifts: 0 };
     } catch (error) {
       throw new BadRequestException('Something wrong');
     }
