@@ -34,7 +34,7 @@ export enum Status {
 export class Meditation {
   @Prop({
     type: String,
-    enum: ['OPEN', 'CLOSE', 'ARCANES'],
+    enum: ['OPENED', 'CLOSED', 'ARCANES'],
     required: [true, 'category is required'],
   })
   category: string;

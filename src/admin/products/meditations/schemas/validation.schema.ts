@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 export const newMeditationSchema = Joi.object()
   .keys({
-    category: Joi.string().valid('OPEN', 'CLOSE', 'ARCANES').required(),
+    category: Joi.string().valid('OPENED', 'CLOSED', 'ARCANES').required(),
     name: Joi.object().keys({
       ru: Joi.string(),
       uk: Joi.string(),
@@ -21,7 +21,7 @@ export const newMeditationSchema = Joi.object()
 
 export const updateMeditationSchema = Joi.object()
   .keys({
-    category: Joi.string().valid('OPEN', 'CLOSE', 'ARCANES').required(),
+    category: Joi.string().valid('OPENED', 'CLOSED', 'ARCANES').required(),
     name: Joi.object()
       .keys({
         ru: Joi.string().required(),
