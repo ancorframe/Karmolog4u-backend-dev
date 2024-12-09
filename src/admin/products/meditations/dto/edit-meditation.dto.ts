@@ -1,29 +1,25 @@
-import { IsOptional } from 'class-validator';
-import { Description, Name, Status } from '../schemas/meditation.schema';
-import { Types } from 'mongoose';
+import {
+  Description,
+  Name,
+  Status,
+} from 'src/products/meditations/schemas/meditation.schema';
 
-export class MeditationEntity {
-  /**
-  Meditation id
-  @example "6744d2c8bd8f6d722ff28c49"
-  */
-  _id?: Types.ObjectId;
-
+export class EditMeditationDto {
   /**
   Meditation category
-  @example "open"
+  @example "OPEN"
   */
   category: string;
 
   /**
   Meditation name
-  @example {ru: 'some name', ua: 'some name'}
+  @example '{"ru": "some name", "uk": "some name"}'
   */
   name: Name;
 
   /**
   Meditation description
-  @example {ru: 'some description', ua: 'some description'}
+  @example '{"ru": "some description", "uk": "some description"}'
   */
   description: Description;
 
@@ -63,5 +59,5 @@ export class MeditationEntity {
   */
   status: Status;
 
-  discount?: any;
+  discount: { discount: number; start: Date; expiredAt: Date };
 }

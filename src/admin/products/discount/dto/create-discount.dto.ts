@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export class CreateDiscountDto {
   /**
   Discount
@@ -14,5 +16,5 @@ export class CreateDiscountDto {
   @example "date"
   */
   expiredAt: Date;
-  reference: { refId: string; refType: string };
+  refId: Types.ObjectId;
 }

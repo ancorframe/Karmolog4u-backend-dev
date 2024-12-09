@@ -16,6 +16,7 @@ export const newMeditationSchema = Joi.object()
     cover: Joi.string(),
     price: Joi.string(),
     status: Joi.string().valid('DRAFT', 'HIDDEN', 'PUBLISHED').required(),
+    discount: Joi.object().optional(),
   })
   .unknown(false);
 
@@ -39,6 +40,7 @@ export const updateMeditationSchema = Joi.object()
     cover: Joi.string().required(),
     price: Joi.string().required(),
     status: Joi.string().valid('DRAFT', 'HIDDEN', 'PUBLISHED').required(),
+    discount: Joi.object().optional(),
   })
   .unknown(false);
 

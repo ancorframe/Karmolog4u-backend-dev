@@ -22,12 +22,18 @@ import { ResponseSuccessDto } from 'src/user/dto/response-success.dto';
 import { AdminMeditationService } from './admin-meditation.service';
 import { CreateMeditationDto } from './dto/create-meditation.dto';
 import { ChangeStatusMeditationDto } from './dto/change-status-meditation.dto';
+import { DiscountService } from '../discount/discount.service';
+import { EditMeditationDto } from './dto/edit-meditation.dto';
+import mongoose from 'mongoose';
 
 // @ApiBearerAuth()
 @ApiTags('admin-meditations')
 @Controller('admin/products/meditations')
 export class AdminMeditationController {
-  constructor(private adminMeditationService: AdminMeditationService) {}
+  constructor(
+    private discountService: DiscountService,
+    private adminMeditationService: AdminMeditationService,
+  ) {}
 
   @Post('create')
   @ApiResponse({
@@ -41,7 +47,23 @@ export class AdminMeditationController {
     @Body() meditationData: CreateMeditationDto,
   ): Promise<ResponseSuccessDto> {
     try {
-      return await this.adminMeditationService.createMeditation(meditationData);
+      if (meditationData.hasOwnProperty('discount')) {
+        const { discount, ...meditation } = meditationData;
+        const newMeditation =
+          await this.adminMeditationService.createMeditation(meditation);
+
+        const discountData = {
+          ...discount,
+          refId: newMeditation._id,
+        };
+        console.log(discount);
+        await this.discountService.createDiscount(discountData);
+        return { message: 'success' };
+      } else {
+        await this.adminMeditationService.createMeditation(meditationData);
+      }
+
+      return { message: 'success' };
     } catch (error) {
       throw new BadRequestException('Meditation conflict create');
     }
@@ -87,15 +109,38 @@ export class AdminMeditationController {
   })
   @ApiResponse({ status: 400, description: 'something wrong' })
   async editMeditation(
-    @Param('id') meditationId: string,
+    @Param('id') id: string,
     @Body(new JoiValidationPipe(updateMeditationSchema))
-    meditationData: MeditationEntity,
-  ): Promise<MeditationEntity> {
+    meditationData: EditMeditationDto,
+  ): Promise<any> {
     try {
-      return await this.adminMeditationService.editMeditation(
-        meditationData,
-        meditationId,
-      );
+      const meditationId = new mongoose.Types.ObjectId(id.toString());
+      if (meditationData.hasOwnProperty('discount')) {
+        const { discount, ...meditation } = meditationData;
+        const editedMeditation =
+          await this.adminMeditationService.editMeditation(
+            meditation,
+            meditationId,
+          );
+        const editedDiscount = await this.discountService.editDiscount({
+          ...discount,
+          refId: meditationId,
+        });
+        const { _id, ...modifiedDiscount } = editedDiscount.toObject();
+        return {
+          ...editedMeditation,
+          discount: modifiedDiscount,
+        };
+      } else {
+        await this.discountService.deleteDiscount({
+          refId: meditationId,
+        });
+
+        return await this.adminMeditationService.editMeditation(
+          meditationData,
+          meditationId,
+        );
+      }
     } catch (error) {
       throw new BadRequestException('Meditation conflict edit');
     }
