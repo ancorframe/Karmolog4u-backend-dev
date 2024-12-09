@@ -58,4 +58,6 @@ export class CreateMeditationDto {
   @example "PUBLISHED"
   */
   status: Status;
+
+  discount: { discount: number; start: Date; expiredAt: Date };
 }

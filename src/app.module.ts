@@ -1,3 +1,4 @@
+import { DiscountModule } from './admin/products/discount/discount.module';
 import { ProductModule } from './products/product.module';
 import { MaterialModule } from './material/material.module';
 import { GroupModule } from './group/group.module';
@@ -19,6 +20,7 @@ const envFilePath: string = getEnvPath(`${__dirname}/common/envs`);
 
 @Module({
   imports: [
+    DiscountModule,
     // ProductModule,
     // MaterialModule,
     ConfigModule.forRoot({ validate, envFilePath, isGlobal: true }),
